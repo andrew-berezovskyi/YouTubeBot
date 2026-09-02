@@ -1,0 +1,181 @@
+# ============================================================
+# VibeRush YouTube Bot
+# Git ignore rules
+# ============================================================
+
+
+# ------------------------------------------------------------
+# Python
+# ------------------------------------------------------------
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+
+# ------------------------------------------------------------
+# Virtual environments
+# ------------------------------------------------------------
+
+.venv/
+venv/
+env/
+ENV/
+
+
+# ------------------------------------------------------------
+# Local secrets / environment variables
+# ------------------------------------------------------------
+
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+
+client_secret*.json
+client_secrets*.json
+credentials*.json
+token*.json
+token.pickle
+oauth*.json
+
+
+# ------------------------------------------------------------
+# Browser authentication / YouTube session
+#
+# CRITICAL:
+# BrowserProfile may contain an authenticated Google/YouTube
+# browser session. Never commit it.
+# ------------------------------------------------------------
+
+BrowserProfile/
+
+
+# ------------------------------------------------------------
+# SQLite databases / local application state
+# ------------------------------------------------------------
+
+data/
+
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+
+
+# ------------------------------------------------------------
+# User videos / media
+# ------------------------------------------------------------
+
+ToUpload/
+Uploaded/
+Processed/
+Frames/
+Thumbnails/
+
+*.mp4
+*.mov
+*.m4v
+*.avi
+*.webm
+*.mkv
+
+
+# ------------------------------------------------------------
+# Generated metadata / runtime output
+# ------------------------------------------------------------
+
+Metadata/
+Logs/
+logs/
+
+*.log
+*.tmp
+*.temp
+
+
+# ------------------------------------------------------------
+# Local watermark assets
+#
+# Keep ignored by default because the watermark can be a
+# personal/channel-specific asset.
+#
+# If you later want to publish a generic demo watermark,
+# explicitly add only that sanitized file.
+# ------------------------------------------------------------
+
+Watermark/
+
+
+# ------------------------------------------------------------
+# Local configuration
+#
+# Keep the real config local until it has been audited.
+# For a public repository, use a sanitized config.example.py.
+# ------------------------------------------------------------
+
+config.py
+config.local.py
+config.local.*
+
+
+# ------------------------------------------------------------
+# Legacy/local experiments
+# ------------------------------------------------------------
+
+OldScripts/
+
+
+# ------------------------------------------------------------
+# PyInstaller / compiled Windows builds
+# ------------------------------------------------------------
+
+build/
+dist/
+
+*.exe
+*.pdb
+
+# Keep these build recipes tracked:
+#   YouTubeBot.spec
+#   BUILD_EXE.bat
+
+
+# ------------------------------------------------------------
+# IDE / editor
+# ------------------------------------------------------------
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+.idea/
+
+
+# ------------------------------------------------------------
+# Windows / macOS
+# ------------------------------------------------------------
+
+Thumbs.db
+desktop.ini
+.DS_Store
+
+
+# ------------------------------------------------------------
+# Backup / temporary editor files
+# ------------------------------------------------------------
+
+*.bak
+*.swp
+*.swo
+*~
