@@ -1,0 +1,33 @@
+{
+  "queries": [
+    "funny moments",
+    "funny fails",
+    "unexpected funny moments"
+  ],
+  "youtube_search": true,
+  "reddit_search": true,
+  "source_urls": [],
+  "approved_creator_urls": [],
+  "approved_video_urls": [],
+  "results_per_query": 5,
+  "max_candidates_per_cycle": 15,
+  "max_downloads_per_cycle": 3,
+  "max_download_mb": 150,
+  "max_storage_mb": 3000,
+  "min_duration": 5,
+  "max_duration": 90,
+  "min_height": 720,
+  "vertical_only": true,
+  "interval_minutes": 60,
+  "max_daily_upload_attempts": 3,
+  "min_upload_interval_minutes": 120,
+  "max_retries": 3,
+  "retry_minutes": 30,
+  "sample_interval_seconds": 3,
+  "max_frames": 32,
+  "vision_timeout_seconds": 120,
+  "min_topic_score": 0.65,
+  "tesseract_cmd": "",
+  "cookie_file": "",
+  "download_timeout_seconds": 600
+}

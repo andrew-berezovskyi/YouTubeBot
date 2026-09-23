@@ -427,6 +427,8 @@ class YouTubeBotGUI:
             pady=18,
         )
 
+        ttk.Button(shell, text="Video discovery / watermark screening", command=self.open_discovery).pack(anchor="e", pady=(0, 8))
+
         # Header
         header = tk.Frame(
             shell,
@@ -1309,6 +1311,12 @@ class YouTubeBotGUI:
     # ========================================================
     # RUN BOT
     # ========================================================
+
+    def open_discovery(self) -> None:
+        if getattr(sys, "frozen", False):
+            messagebox.showinfo("Discovery", "Run START_DISCOVERY.bat from the project folder. Discovery currently requires Python.")
+            return
+        subprocess.Popen([sys.executable, str(BASE_DIR / "run_discovery_gui.py")], cwd=BASE_DIR)
 
     def start_bot(self) -> None:
         if (

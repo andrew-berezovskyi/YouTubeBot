@@ -1151,7 +1151,7 @@ def process_queue_item(
         )
 
 
-def main() -> None:
+def _main() -> None:
     print("")
     print("=" * 62)
     print(
@@ -1405,6 +1405,12 @@ def main() -> None:
             raise SystemExit(2)
 
         break
+
+
+def main() -> None:
+    from discovery.service import worker_lock
+    with worker_lock("pipeline"):
+        _main()
 
 
 if __name__ == "__main__":

@@ -179,3 +179,10 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# Discovery runtime and source access
+Downloads/
+Screening/
+discovery_settings.json
+cookies*.txt
+*.cookies

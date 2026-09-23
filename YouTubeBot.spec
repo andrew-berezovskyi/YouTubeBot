@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 from pathlib import Path
+import sysconfig
 from PyInstaller.utils.hooks import collect_all
 
 project_root = Path(SPECPATH).resolve()
@@ -29,6 +30,7 @@ backend = Analysis(
     datas=(
         playwright_datas
         + ollama_datas
+        + [(str(Path(sysconfig.get_path("stdlib")) / "queue.py"), ".")]
     ),
     hiddenimports=(
         playwright_hidden
@@ -75,7 +77,7 @@ gui = Analysis(
     ["exe_gui_entry.py"],
     pathex=[str(project_root)],
     binaries=[],
-    datas=[],
+    datas=[(str(Path(sysconfig.get_path("stdlib")) / "queue.py"), ".")],
     hiddenimports=[
         "database.db",
     ],
