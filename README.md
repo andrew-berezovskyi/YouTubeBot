@@ -1,109 +1,58 @@
-# VibeRush YouTube Bot — Discovery 1.1
+# VibeRush YouTube Bot
 
-Source update for the existing VibeRush bot. Adds multi-source discovery,
-platform downloads, OCR/vision watermark screening, persistent candidate history,
-conservative duplicate detection and a bridge to the original SQLite pipeline.
+A local Python workflow for discovering, screening, preparing, and uploading short videos. The repository combines the original SQLite-based processing pipeline with a newer discovery module, a GUI, and command-line entry points. The discovery module searches configured sources, checks candidate media, and passes accepted files to the original queue.
 
-**Start with [START_HERE_UK.md](START_HERE_UK.md)** for installation and operation.
-The original project documentation is preserved in [README_LEGACY.md](README_LEGACY.md).
+Start with the detailed [setup guide](START_HERE_UK.md) (Ukrainian). [README_LEGACY.md](README_LEGACY.md) documents the earlier pipeline.
 
-## Installation
+## Requirements and setup
 
-Close the old application and back up your project. Merge this update archive's
-root contents into the existing project folder. The archive contains only new
-and changed files, with their relative paths preserved. Your `config.py` is not included
-and is not overwritten. For a fresh installation copy `config.example.py` to
-`config.py`, then configure FFmpeg/FFprobe and Ollama paths/models.
+Run on a machine with Python, FFmpeg/FFprobe, Tesseract OCR, and Ollama configured for the models used by the project. Some source downloads may require additional yt-dlp runtime dependencies. From the repository root:
 
 ```powershell
 python -m pip install -r requirements.txt
 python -m playwright install chromium
+```
+
+For a fresh setup, copy `config.example.py` to the local `config.py` and set the paths and models for your machine. Review `discovery_settings.example.json` for discovery settings. Keep credentials, browser profiles, cookies, and runtime databases out of Git.
+
+Check dependencies before processing:
+
+```powershell
 python check_discovery.py
 python run_discovery_gui.py
 ```
 
-Install Tesseract OCR separately. Use `tesseract_cmd` in discovery settings if it
-is not on PATH. This release runs discovery from Python; an old EXE will not
-contain these changes. Do not run old EXEs alongside the new worker.
+The Windows batch files `INSTALL_DISCOVERY.bat` and `START_DISCOVERY.bat` provide corresponding shortcuts. The newer discovery module runs from Python source; an older EXE does not automatically include it.
 
-## Sources and limitations
+## Sources and review
 
-- YouTube: keyword search and configured supported video/channel/playlist URLs.
-- Reddit: public RSS search and configured video-post URLs. RSS can be blocked.
-- TikTok: configured supported video/profile URLs; **no global TikTok search**.
-- Vimeo: configured supported URLs.
+- YouTube: keyword search and configured video, channel, or playlist URLs.
+- Reddit: public RSS search and configured video-post URLs.
+- TikTok: configured video or profile URLs; no global keyword search.
+- Vimeo: configured URLs.
 
-yt-dlp availability depends on the platform, video, region, login requirements
-and installed version. There is no access-control bypass or CAPTCHA solver.
-Source cookies, if needed, are an explicit local Netscape cookie-file setting.
-No cookies are exported automatically.
+Availability depends on the source, region, authentication, and yt-dlp version. The project does not bypass access controls. Candidates are saved in `data/discovery.db`; only videos or creators explicitly approved for reuse can proceed to download. Screening checks media properties, decoding, exact and possible visual duplicates, and watermark evidence using OCR and local vision inference. Ambiguous or failed checks require review. These checks cannot guarantee that every watermark or modified duplicate is detected.
 
-## Screening and state
-
-Candidates are persisted in a separate `data/discovery.db`. Videos or creators
-must be in user-approved reuse lists before download. A license label does not
-automatically approve a source. Approved creators allow unattended future cycles.
-
-Downloaded bytes are checked for size, dimensions, duration, decoding errors,
-exact hashes and watermark evidence before entering the original pipeline.
-Tesseract OCR and local Ollama vision inspect sampled frames, including nearby
-frames around ambiguous marks. Missing dependencies, failed inference or
-ambiguous evidence never silently pass. Reports retain timestamps and JPEGs.
-
-Frame dHash comparisons flag possible re-encoded duplicates for review. They do
-not guarantee detection of crops, mirrored copies or remixes. Watermark absence
-cannot be guaranteed between sampled frames. Topic scores are heuristic, not
-predictions of virality. No watermark removal is implemented.
-
-## Automation
+## Command-line operation
 
 ```powershell
-python run_discovery.py                        # discovery/screening only
-python run_discovery.py --watch                # repeat, no YouTube upload
-python run_discovery.py --watch --process      # original pipeline, PRIVATE uploads
-python run_discovery.py --watch --process --publish # PUBLIC uploads
+python run_discovery.py                        # one discovery/screening cycle, no upload
+python run_discovery.py --watch                # repeated discovery, no upload
+python run_discovery.py --watch --process      # process and upload privately
+python run_discovery.py --watch --process --publish # public uploads
 ```
 
-Accepted files are copied into the original queue one at a time. Existing
-unfinished runs block new automated processing. Pipeline locks prevent concurrent
-new-code workers; legacy EXEs do not participate. Ambiguous uploads require
-manual reconciliation to prevent duplicates. They are not automatically retried.
+The worker must keep running for repeat cycles; this is not a cloud scheduler or Windows service. Do not run an older EXE concurrently with the new worker. Uncertain upload results need manual reconciliation before retrying. Review the settings and safety limits in [START_HERE_UK.md](START_HERE_UK.md) before enabling uploads, especially public uploads.
 
-Defaults: 3 downloads per cycle, 3 upload attempts per rolling 24h, 120-minute
-minimum upload interval, 60-minute search interval, 3 transient-error attempts.
-The GUI must remain running for its worker to continue. Closing it stops its
-worker. This is not a Windows service or a cloud-hosted scheduler.
-
-Settings are edited in the discovery GUI as JSON; the complete field reference
-is in START_HERE_UK.md. Runtime folders/settings are ignored by Git.
-
-## Validation
+## Tests and layout
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
-Tests cover decision gates, canonical URLs, reuse approval, deduplication,
-locking, retry state, upload limits, the original queue bridge with mocked upload,
-and real FFmpeg/Tesseract processing of a generated marked MP4 with mocked vision.
-Live source access, real Ollama responses, Windows GUI and actual YouTube uploads
-still need a local private-video smoke test. No new Windows binaries are provided.
+- `discovery/` — source search, screening, candidate storage, and queue handoff.
+- `ai/`, `video/`, `youtube/`, `database/`, `queue/` — original processing pipeline.
+- `gui/` and `run_discovery_gui.py` — local interface.
+- `tests/` — automated checks.
 
-## Reference documentation
-
-- [yt-dlp usage and dependencies](https://github.com/yt-dlp/yt-dlp)
-- [Ollama structured outputs](https://docs.ollama.com/capabilities/structured-outputs)
-- [Tesseract installation](https://tesseract-ocr.github.io/tessdoc/Installation.html)
-
-## Layout
-
-`discovery/settings.py`: defaults and validation; `sources.py`: search/download;
-`screening.py`: media, OCR, vision and fingerprints; `store.py`: candidate DB;
-`service.py`: cycles and queue handoff. `run_discovery_gui.py`: separate GUI;
-`check_discovery.py`: non-publishing environment diagnostics.
-
-The original `ai/`, `database/`, `video/`, `youtube/`, GUI and pipeline are retained.
-`queue/__init__.py` now exposes the standard Python queue API to avoid shadowing
-errors in third-party packages while preserving `queue.manager`. The original
-PyInstaller spec includes that stdlib module for the legacy app build path;
-discovery itself remains a source-run feature in this release.
+Automated tests do not replace a local end-to-end check of live sources, installed tools, the GUI, and an actual private YouTube upload.
